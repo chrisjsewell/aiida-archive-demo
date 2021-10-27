@@ -127,3 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+.vscode/
+
+# store in the myst markdown format
+*.ipynb

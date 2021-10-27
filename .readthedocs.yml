@@ -1,0 +1,9 @@
+version: 2
+
+conda:
+  environment: environment.yml
+
+# Let the build fail if there are any warnings
+sphinx:
+    builder: html
+    fail_on_warning: true

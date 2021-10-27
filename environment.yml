@@ -1,0 +1,17 @@
+# conda env create -f environment.yml
+name: aiida-archive-demo
+channels:
+  - "conda-forge"
+dependencies:
+- python=3.8
+- graphviz
+- pip
+- pip:
+  - git+git://github.com/chrisjsewell/aiida_core@new-archive#egg=aiida-core[atomic_tools]
+  - black
+  - myst-nb~=0.13.1
+  - jupytext
+  - sphinx-book-theme
+  - sphinx-design
+  - sphinx-copybutton
+  - sphinx-thebe
