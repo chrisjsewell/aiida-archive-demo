@@ -1,7 +1,7 @@
 version: 2
 
 conda:
-  environment: environment.yml
+  environment: doc-build.yml
 
 # Let the build fail if there are any warnings
 sphinx:

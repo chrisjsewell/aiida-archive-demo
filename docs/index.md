@@ -42,8 +42,6 @@ AiiDA Version 2.0 Archive Demonstrator
 
 +++
 
-## Introduction
-
 This site is a Jupyter Notebook to demonstrate the new [AiiDA](aiida) v2.0 archive functionality (see [aiidateam/aiida-core#5145](https://github.com/aiidateam/aiida-core/pull/5145)).
 The archive allows
 
@@ -52,11 +50,12 @@ Use the {octicon}`rocket` dropdown at the top of the page to launch interactive 
 :::
 
 ```{code-cell} ipython3
-import yaml
 from aiida import orm, __version__
 from aiida.tools.archive import get_format
 
-__version__
+archive_format = get_format()
+
+__version__, archive_format.latest_version
 ```
 
 ```{code-cell} ipython3
@@ -65,6 +64,8 @@ archive_format.read_version("archives/calc.aiida")
 ```
 
 ```{code-cell} ipython3
+import yaml
+
 with archive_format.open("archives/calc.aiida", mode="r") as archive:
     metadata = archive.get_metadata()
 print(yaml.dump(metadata))
@@ -78,9 +79,63 @@ with archive_format.open("archives/calc.aiida", mode="r") as archive:
 ```
 
 ```{code-cell} ipython3
+:tags: [raises-exception, hide-output]
+
+node.computer
+```
+
+```{code-cell} ipython3
+with archive_format.open("archives/calc.aiida", mode="r") as archive:
+    qb = archive.querybuilder()
+    qb.append(orm.Node, tag="calc", filters={'uuid': '05d64c2c-8f49-446f-bd07-8509d55e0c49'})
+    qb.append(orm.Node, with_incoming="calc")
+    print(qb.all())
+```
+
+```{code-cell} ipython3
 with archive_format.open("archives/calc.aiida", mode="r") as archive:
     graph = archive.graph()
     graph.recurse_descendants("05d64c2c-8f49-446f-bd07-8509d55e0c49")
     graph.recurse_ancestors("05d64c2c-8f49-446f-bd07-8509d55e0c49")
 graph.graphviz
+```
+
+```{code-cell} ipython3
+import matplotlib.pyplot as plt
+
+with archive_format.open("archives/calc.aiida", mode="r") as archive:
+    traj = archive.get(orm.Node, pk=19432)
+    plt.plot(traj.get_array("energy_hartree"))
+    ax = plt.gca()
+    ax.set_xlabel("Step")
+    ax.set_ylabel("Energy (hartree)")
+```
+
+```{code-cell} ipython3
+import matplotlib.pyplot as plt
+from ase.visualize.plot import plot_atoms
+
+
+with archive_format.open("archives/calc.aiida", mode="r") as archive:
+    atoms = archive.get(orm.Node, pk=19404).get_ase()
+
+fig, ax = plt.subplots()
+plot_atoms(atoms, ax, radii=0.5, rotation=("10x,10y,0z"))
+```
+
+```{code-cell} ipython3
+from ase.visualize import view
+
+
+with archive_format.open("archives/calc.aiida", mode="r") as archive:
+    atoms = archive.get(orm.Node, pk=19404).get_ase()
+
+view(atoms, viewer='x3d')
+```
+
+```{code-cell} ipython3
+with archive_format.open("archives/calc.aiida", mode="r") as archive:
+    folder = archive.get(orm.Node, pk=19406)
+    print(folder.list_object_names())
+    print(folder.get_object_content('aiida.out')[:988])
 ```
